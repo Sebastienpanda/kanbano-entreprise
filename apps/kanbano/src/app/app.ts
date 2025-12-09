@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { Home } from './shared/ui/header';
 
 @Component({
-  imports: [NxWelcome, RouterModule],
-  selector: 'app-root',
-  templateUrl: './app.html',
-  styleUrl: './app.css',
+    imports: [RouterModule, Home],
+    selector: 'app-root',
+    templateUrl: './app.html',
 })
 export class App {
-  protected title = 'kanbano';
+    protected title = 'kanbano';
 }
