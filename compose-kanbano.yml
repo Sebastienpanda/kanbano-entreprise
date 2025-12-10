@@ -1,35 +1,37 @@
+version: "3.9"
+
 services:
     kanbano:
         build:
             context: .
             dockerfile: ./apps/kanbano/Dockerfile
         container_name: kanbano
+        restart: always
+
         labels:
-            # Activer Traefik
+            # === Activer Traefik ===
             - "traefik.enable=true"
 
-            # Router HTTPS
-            - "traefik.http.routers.kanbano-secure.rule=Host(`kanbano.fr`) || Host(`www.kanbano.fr`)"
-            - "traefik.http.routers.kanbano-secure.entrypoints=websecure"
-            - "traefik.http.routers.kanbano-secure.tls=true"
-            - "traefik.http.routers.kanbano-secure.tls.certresolver=letsencrypt"
-            - "traefik.http.routers.kanbano-secure.service=kanbano"
+            # === Router HTTPS ===
+            - "traefik.http.routers.kanbano.rule=Host(`kanbano.fr`)"
+            - "traefik.http.routers.kanbano.entrypoints=websecure"
+            - "traefik.http.routers.kanbano.tls=true"
+            - "traefik.http.routers.kanbano.tls.certresolver=letsencrypt"
 
-            # Router HTTP (redirection vers HTTPS)
-            - "traefik.http.routers.kanbano-http.rule=Host(`kanbano.fr`) || Host(`www.kanbano.fr`)"
+            # === Router HTTP => redirection vers HTTPS ===
+            - "traefik.http.routers.kanbano-http.rule=Host(`kanbano.fr`)"
             - "traefik.http.routers.kanbano-http.entrypoints=web"
-            - "traefik.http.routers.kanbano-http.middlewares=redirect-to-https"
+            - "traefik.http.routers.kanbano-http.middlewares=redirect-https"
 
-            # Middleware de redirection
-            - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-            - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+            # === Middleware redirection ===
+            - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+            - "traefik.http.middlewares.redirect-https.redirectscheme.permanent=true"
 
-            # Service (port du container)
+            # === Port interne du container ===
             - "traefik.http.services.kanbano.loadbalancer.server.port=80"
 
         networks:
             - dokploy-network
-        restart: always
 
 networks:
     dokploy-network:
