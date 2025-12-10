@@ -1,12 +1,34 @@
-version: "3.9"
-
 services:
     kanbano:
         build:
             context: .
             dockerfile: ./apps/kanbano/Dockerfile
         container_name: kanbano
+        labels:
+            - "traefik.enable=true"
+
+            # Router HTTPS
+            - "traefik.http.routers.kanbano.rule=Host(`kanbano.fr`)"
+            - "traefik.http.routers.kanbano.entrypoints=websecure"
+            - "traefik.http.routers.kanbano.tls=true"
+            - "traefik.http.routers.kanbano.tls.certresolver=letsencrypt"
+
+            # Router HTTP -> redirection HTTPS
+            - "traefik.http.routers.kanbano-http.rule=Host(`kanbano.fr`)"
+            - "traefik.http.routers.kanbano-http.entrypoints=web"
+            - "traefik.http.routers.kanbano-http.middlewares=redirect-https"
+
+            # Middleware Redirection HTTP → HTTPS
+            - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+            - "traefik.http.middlewares.redirect-https.redirectscheme.permanent=true"
+
+            # Port interne du container
+            - "traefik.http.services.kanbano.loadbalancer.server.port=8080"
+
+        networks:
+            - dokploy-network
         restart: always
-        ports:
-            - "80:80"
-            - "443:443"
+
+networks:
+    dokploy-network:
+        external: true
