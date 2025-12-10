@@ -22,6 +22,4 @@ import { Footer } from './shared/ui/footer';
     selector: 'app-root',
     templateUrl: './app.html',
 })
-export class App {
-    protected title = 'kanbano';
-}
+export class App {}
