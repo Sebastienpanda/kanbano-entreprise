@@ -33,9 +33,50 @@ COPY <<EOF /etc/caddy/Caddyfile
 
 :80 {
     root * /srv
-    encode gzip
-    file_server
-    try_files {path} /index.html
+
+    # Compression optimisée
+    encode zstd gzip {
+        match {
+            header Content-Type text/*
+            header Content-Type application/json*
+            header Content-Type application/javascript*
+            header Content-Type application/xml*
+            header Content-Type application/xhtml+xml*
+            header Content-Type image/svg+xml*
+        }
+    }
+
+    # Fichiers statiques
+    file_server {
+        index index.html
+    }
+
+    # Routing Angular + fallback
+    try_files {path} {path}.html {path}/ /index.html
+
+    # Cache long pour /assets
+    @assets {
+        path /assets/*
+    }
+    handle @assets {
+        header Cache-Control "public, max-age=31536000, immutable"
+        header Expires "max-age=31536000"
+        file_server
+    }
+
+    # Headers sécurité
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    }
+
+    # Page 404
+    handle_errors {
+        rewrite * /404.html
+        file_server
+    }
 }
 EOF
 
