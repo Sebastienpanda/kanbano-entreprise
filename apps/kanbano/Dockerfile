@@ -29,13 +29,13 @@ FROM caddy:2-alpine
 # Copier les fichiers buildés
 COPY --from=builder /app/dist/apps/kanbano/browser /srv
 
-# Configuration Caddy pour SPA
-RUN echo ':80 {
-    root * /srv
-    encode gzip
-    file_server
-    try_files {path} /index.html
-}' > /etc/caddy/Caddyfile
+# Créer le Caddyfile
+RUN printf ':80 {\n\
+    root * /srv\n\
+    encode gzip\n\
+    file_server\n\
+    try_files {path} /index.html\n\
+}\n' > /etc/caddy/Caddyfile
 
 EXPOSE 80
 
