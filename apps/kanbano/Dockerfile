@@ -56,6 +56,11 @@ COPY <<EOF /etc/caddy/Caddyfile
     # ===========================
     # Headers de sécurité
     # ===========================
+
+    @nonce {
+        path *
+    }
+
     header {
 
         # ---- Sécurité HTTPS (Traefik termine le TLS)
@@ -82,8 +87,8 @@ COPY <<EOF /etc/caddy/Caddyfile
             default-src 'self';
             img-src 'self' data:;
             script-src 'self' 'unsafe-inline';
-            style-src 'self' 'unsafe-inline';
-            font-src 'self' data:;
+            style-src 'self' 'unsafe-inline' https://fonts.bunny.net;
+            font-src 'self' data: https://fonts.bunny.net;
             connect-src 'self' https:;
             object-src 'none';
             frame-ancestors 'none';
