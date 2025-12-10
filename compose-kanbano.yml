@@ -2,7 +2,7 @@ services:
     kanbano:
         build:
             context: .
-            dockerfile: Dockerfile
+            dockerfile: ./apps/kanbano/Dockerfile
         container_name: kanbano
         labels:
             - "traefik.enable=true"
