@@ -33,46 +33,67 @@ COPY <<EOF /etc/caddy/Caddyfile
 
 :80 {
     root * /srv
+    encode gzip zstd
 
-    # Compression optimisée
-    encode zstd gzip {
-        match {
-            header Content-Type text/*
-            header Content-Type application/json*
-            header Content-Type application/javascript*
-            header Content-Type application/xml*
-            header Content-Type application/xhtml+xml*
-            header Content-Type image/svg+xml*
-        }
-    }
-
-    # Fichiers statiques
-    file_server {
-        index index.html
-    }
-
-    # Routing Angular + fallback
+    # ===========================
+    # Routes Angular SPA
+    # ===========================
     try_files {path} {path}.html {path}/ /index.html
 
-    # Cache long pour /assets
+    file_server
+
+    # ===========================
+    # Cache long-term pour assets
+    # ===========================
     @assets {
         path /assets/*
     }
     handle @assets {
         header Cache-Control "public, max-age=31536000, immutable"
-        header Expires "max-age=31536000"
         file_server
     }
 
-    # Headers sécurité
+    # ===========================
+    # Headers de sécurité
+    # ===========================
     header {
+
+        # ---- Sécurité HTTPS (Traefik termine le TLS)
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+        # ---- Anti sniffing & framing
         X-Content-Type-Options "nosniff"
         X-Frame-Options "DENY"
         Referrer-Policy "strict-origin-when-cross-origin"
-        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+        # ---- Permissions Policy (anti-espionnage)
+        Permissions-Policy "
+            geolocation=(),
+            microphone=(),
+            camera=(),
+            fullscreen=(self),
+            payment=(),
+            usb=(),
+            bluetooth=()
+        "
+
+        # ---- Content Security Policy compatible Angular
+        Content-Security-Policy "
+            default-src 'self';
+            img-src 'self' data:;
+            script-src 'self' 'unsafe-inline';
+            style-src 'self' 'unsafe-inline';
+            font-src 'self' data:;
+            connect-src 'self' https:;
+            object-src 'none';
+            frame-ancestors 'none';
+            base-uri 'self';
+        "
     }
 
-    # Page 404
+    # ===========================
+    # Gestion des erreurs
+    # ===========================
     handle_errors {
         rewrite * /404.html
         file_server
