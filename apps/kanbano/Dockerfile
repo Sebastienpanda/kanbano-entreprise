@@ -1,39 +1,44 @@
 # ============================
-# Stage 1: Build Angular
+# Stage 1 : Build Angular
 # ============================
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Installer pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copier les fichiers de configuration
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY nx.json tsconfig.base.json ./
 
-# Installer les dépendances
 RUN pnpm install --frozen-lockfile
 
-# Copier tout le code source
 COPY . .
-
-# Build Angular
 RUN pnpm exec nx run kanbano:build --configuration=production
 
 # ============================
-# Stage 2: Serveur Node HTTP simple
+# Stage 2 : Caddy (HTTP only)
 # ============================
-FROM node:20-alpine
+FROM caddy:2-alpine
 
-WORKDIR /app
+WORKDIR /srv
 
-# Installer un serveur http léger
-RUN npm install -g http-server
+# Copier les fichiers Angular
+COPY --from=builder /app/dist/apps/kanbano/browser .
 
-# Copier les fichiers buildés
-COPY --from=builder /app/dist/apps/kanbano/browser ./dist
+# Désactiver HTTPS automatique de Caddy !!!
+COPY <<EOF /etc/caddy/Caddyfile
+{
+  auto_https off
+}
 
-EXPOSE 8080
+:80 {
+    root * /srv
+    encode gzip
+    file_server
+    try_files {path} /index.html
+}
+EOF
 
-CMD ["http-server", "dist", "-p", "8080", "-c-1"]
+EXPOSE 80
+
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
