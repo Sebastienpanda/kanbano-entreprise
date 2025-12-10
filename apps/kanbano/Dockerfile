@@ -26,6 +26,8 @@ RUN pnpm exec nx run kanbano:build --configuration=production
 # ============================================
 FROM caddy:2-alpine
 
+ENV CADDY_AUTO_HTTPS=off
+
 # Copier les fichiers buildés
 COPY --from=builder /app/dist/apps/kanbano/browser /srv
 
