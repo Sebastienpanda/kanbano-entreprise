@@ -7,21 +7,21 @@ services:
         labels:
             - "traefik.enable=true"
 
-            # ROUTEUR HTTPS
+
             - "traefik.http.routers.kanbano.rule=Host(`kanbano.fr`)"
             - "traefik.http.routers.kanbano.entrypoints=websecure"
             - "traefik.http.routers.kanbano.tls=true"
             - "traefik.http.routers.kanbano.tls.certresolver=letsencrypt"
 
-            # ROUTEUR HTTP → REDIRECT HTTPS
+
             - "traefik.http.routers.kanbano-http.rule=Host(`kanbano.fr`)"
             - "traefik.http.routers.kanbano-http.entrypoints=web"
             - "traefik.http.routers.kanbano-http.middlewares=redirect-https"
 
-            # Middleware
+
             - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
 
-            # PORT INTERNE
+
             - "traefik.http.services.kanbano.loadbalancer.server.port=80"
 
         networks:

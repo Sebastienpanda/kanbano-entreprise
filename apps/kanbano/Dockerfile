@@ -1,6 +1,3 @@
-# ============================
-# Stage 1 : Build Angular
-# ============================
 FROM node:20-alpine AS builder
 
 WORKDIR /app
@@ -15,17 +12,15 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm exec nx run kanbano:build --configuration=production
 
-# ============================
-# Stage 2 : Caddy (HTTP only)
-# ============================
+
 FROM caddy:2-alpine
 
 WORKDIR /srv
 
-# Copier les fichiers Angular
+
 COPY --from=builder /app/dist/apps/kanbano/browser .
 
-# Désactiver HTTPS automatique de Caddy !!!
+
 COPY <<EOF /etc/caddy/Caddyfile
 {
   auto_https off
@@ -35,16 +30,12 @@ COPY <<EOF /etc/caddy/Caddyfile
     root * /srv
     encode gzip zstd
 
-    # ===========================
-    # Routes Angular SPA
-    # ===========================
+
     try_files {path} {path}.html {path}/ /index.html
 
     file_server
 
-    # ===========================
-    # Cache long-term pour assets
-    # ===========================
+
     @assets {
         path /assets/*
     }
@@ -53,9 +44,7 @@ COPY <<EOF /etc/caddy/Caddyfile
         file_server
     }
 
-    # ===========================
-    # Headers de sécurité
-    # ===========================
+
 
     @nonce {
         path *
@@ -63,15 +52,15 @@ COPY <<EOF /etc/caddy/Caddyfile
 
     header {
 
-        # ---- Sécurité HTTPS (Traefik termine le TLS)
+
         Strict-Transport-Security "max-age=31536000; includeSubDomains"
 
-        # ---- Anti sniffing & framing
+
         X-Content-Type-Options "nosniff"
         X-Frame-Options "DENY"
         Referrer-Policy "strict-origin-when-cross-origin"
 
-        # ---- Permissions Policy (anti-espionnage)
+
         Permissions-Policy "
             geolocation=(),
             microphone=(),
@@ -82,7 +71,7 @@ COPY <<EOF /etc/caddy/Caddyfile
             bluetooth=()
         "
 
-        # ---- Content Security Policy compatible Angular
+
         Content-Security-Policy "
             default-src 'self';
             img-src 'self' data:;
@@ -96,9 +85,7 @@ COPY <<EOF /etc/caddy/Caddyfile
         "
     }
 
-    # ===========================
-    # Gestion des erreurs
-    # ===========================
+
     handle_errors {
         rewrite * /404.html
         file_server
