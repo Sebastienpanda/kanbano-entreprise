@@ -1,9 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-import {
-    FastifyAdapter,
-    NestFastifyApplication,
-} from '@nestjs/platform-fastify';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
@@ -15,7 +12,8 @@ async function bootstrap() {
     );
     app.setGlobalPrefix('/api');
     const config = app.get(ConfigService);
-    await app.listen(3000);
+    const port = config.get('PORT');
+    await app.listen(port, '0.0.0.0');
 }
 
 bootstrap();
