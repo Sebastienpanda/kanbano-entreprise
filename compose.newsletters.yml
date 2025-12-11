@@ -6,13 +6,13 @@ services:
         container_name: newsletters
 
         environment:
-            PORT: $${{project.PORT}}
-            NODE_ENV: $${{project.NODE_ENV}}
-            SMTP_HOST: $${{project.SMTP_HOST}}
-            SMTP_PORT: $${{project.SMTP_PORT}}
-            SMTP_USER: $${{project.SMTP_USER}}
-            SMTP_PASS: $${{project.SMTP_PASS}}
-            SMTP_FROM: $${{project.SMTP_FROM}}
+            PORT: ${PORT:-3000}
+            NODE_ENV: ${NODE_ENV:-production}
+            SMTP_HOST: ${SMTP_HOST}
+            SMTP_PORT: ${SMTP_PORT}
+            SMTP_USER: ${SMTP_USER}
+            SMTP_PASS: ${SMTP_PASS}
+            SMTP_FROM: ${SMTP_FROM}
 
 
         expose:
