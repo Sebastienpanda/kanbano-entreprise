@@ -2,7 +2,9 @@
     "name": "@kanbano-entreprise/source",
     "version": "0.0.0",
     "license": "MIT",
-    "scripts": {},
+    "scripts": {
+        "build:newsletters": "pnpm nx build newsletters --configuration=production"
+    },
     "private": true,
     "dependencies": {
         "@angular/common": "~20.3.0",
