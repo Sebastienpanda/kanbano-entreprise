@@ -3,8 +3,8 @@
     "version": "0.0.0",
     "license": "MIT",
     "scripts": {
-        "start": "node dist/apps/newsletters/main.js",
-        "build": "pnpm nx build newsletters --configuration=production"
+//        "start": "node dist/apps/newsletters/main.js",
+//        "build": "pnpm nx build newsletters --configuration=production"
     },
     "private": true,
     "dependencies": {
