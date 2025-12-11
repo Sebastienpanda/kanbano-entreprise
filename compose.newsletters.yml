@@ -7,12 +7,12 @@ services:
 
         environment:
             PORT: "3000"
-            NODE_ENV: $${{project.NODE_ENV}}
-            SMTP_HOST: $${{project.SMTP_HOST}}
-            SMTP_PORT: $${{project.SMTP_PORT}}
-            SMTP_USER: $${{project.SMTP_USER}}
-            SMTP_PASS: $${{project.SMTP_PASS}}
-            SMTP_FROM: $${{project.SMTP_FROM}}
+            NODE_ENV: "PRODUCTION"
+            SMTP_HOST: "mail.infomaniak.com"
+            SMTP_PORT: "587"
+            SMTP_USER: "contact@kanbano.fr"
+            SMTP_PASS: "{jT8OVYK&b~bNxZ]"
+            SMTP_FROM: "Kanbano contact@kanbano.fr"
 
 
         expose:
