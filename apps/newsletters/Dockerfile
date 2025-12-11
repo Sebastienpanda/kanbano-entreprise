@@ -1,45 +1,24 @@
-# ============================
-# 1️⃣ BUILD STAGE
-# ============================
-FROM node:24-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-ENV NODE_ENV=production
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copies MINIMALES
+COPY package.json pnpm-lock.yaml ./
 COPY nx.json tsconfig.base.json ./
+COPY apps/newsletters ./apps/newsletters
 
-# Télécharge toutes les dépendances sans les installer
-RUN pnpm fetch
-
-# Copie du source
-COPY . .
-
-# Installation complète (prod + dev) uniquement pour builder
+RUN corepack enable && corepack prepare pnpm@latest --activate
 RUN pnpm install --frozen-lockfile
-
-# Build de l'app
 RUN pnpm nx build newsletters --configuration production
 
 
-# ============================
-# 2️⃣ RUNTIME STAGE MINIMAL
-# ============================
-FROM node:24-alpine AS runner
-
+FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Installation des dépendances runtime uniquement
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN pnpm fetch
-RUN pnpm install --prod --frozen-lockfile
-
-# Copie du build NestJS
 COPY --from=builder /app/dist/apps/newsletters ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY package.json ./
 
 EXPOSE 3000
 CMD ["node", "dist/main.js"]
