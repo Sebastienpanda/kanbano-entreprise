@@ -4,7 +4,7 @@
     "license": "MIT",
     "scripts": {
         "start": "node dist/apps/newsletters/main.js",
-        "build:newsletters": "pnpm nx build newsletters --configuration=production"
+        "build": "pnpm nx build newsletters --configuration=production"
     },
     "private": true,
     "dependencies": {
