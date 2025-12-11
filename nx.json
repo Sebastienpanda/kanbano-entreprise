@@ -66,7 +66,8 @@
             "plugin": "@nx/jest/plugin",
             "options": {
                 "targetName": "test"
-            }
+            },
+            "exclude": ["apps/newsletters-e2e/**/*"]
         },
         {
             "plugin": "@nx/vite/plugin",
@@ -87,6 +88,17 @@
             "options": {
                 "testTargetName": "vitest:test",
                 "ciTargetName": "test-ci"
+            }
+        },
+        {
+            "plugin": "@nx/webpack/plugin",
+            "options": {
+                "buildTargetName": "build",
+                "serveTargetName": "serve",
+                "previewTargetName": "preview",
+                "buildDepsTargetName": "build-deps",
+                "watchDepsTargetName": "watch-deps",
+                "serveStaticTargetName": "serve-static"
             }
         }
     ]
