@@ -1,0 +1,8 @@
+{
+    "name": "newsletters",
+    "version": "1.0.0",
+    "scripts": {
+        "build": "pnpm nx build newsletters --configuration=production",
+        "start": "node dist/apps/newsletters/main.js"
+    }
+}
