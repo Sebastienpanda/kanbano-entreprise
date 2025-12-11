@@ -1,35 +1,49 @@
-FROM node:20-alpine AS builder
+# -----------------------------------
+# 1) BUILDER — Compile NestJS
+# -----------------------------------
+FROM node:24-alpine AS builder
 
 WORKDIR /app
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_ENV=development
 
+# Installer corepack proprement sous Alpine
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
+# Copier uniquement ce qui est nécessaire pour installer les deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY nx.json tsconfig.base.json ./
 
-RUN pnpm install --frozen-lockfile
+# Pré-fetch → permet un cache intelligent
+RUN pnpm fetch
 
-# Copie TOUT le monorepo, comme pour Angular
+# Copier le reste du repo
 COPY . .
 
-# Build NestJS
-RUN pnpm exec nx build newsletters
+# Installer toutes les dépendances (sans prune)
+RUN pnpm install --frozen-lockfile
 
-# =============================
-# Production image
-# =============================
-FROM node:20-alpine
+# Compilation NX de l'app NestJS
+RUN pnpm nx build newsletters --configuration production
+
+
+# -----------------------------------
+# 2) RUNNER — Image finale minimale
+# -----------------------------------
+FROM node:24-alpine AS runner
 
 WORKDIR /app
-
 ENV NODE_ENV=production
 
-# Copies uniquement le build final
+# Installer uniquement les deps de production
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && corepack prepare pnpm@latest --activate && pnpm install --prod --frozen-lockfile
+
+# Copier le build final
 COPY --from=builder /app/dist/apps/newsletters ./dist
 
-# Copies node_modules du builder (optimisé)
-COPY --from=builder /app/node_modules ./node_modules
-
+# Exposer le port NestJS
 EXPOSE 3000
 
 CMD ["node", "dist/main.js"]

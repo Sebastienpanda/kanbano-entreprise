@@ -14,10 +14,6 @@ services:
             SMTP_PASS: ${SMTP_PASS}
             SMTP_FROM: ${SMTP_FROM}
 
-
-        expose:
-            - "3000"
-
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.newsletters.rule=Host(`api.kanbano.fr`)"
