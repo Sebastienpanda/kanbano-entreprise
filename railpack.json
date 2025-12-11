@@ -1,7 +1,7 @@
 {
     "$schema": "https://schema.railpack.com",
 
-    "assets-build": [
+    "copy": [
         {
             "source": ".",
             "destination": "/app"
@@ -21,8 +21,9 @@
                 "pnpm install --frozen-lockfile --prefer-offline"
             ]
         },
+
         "build": {
-            "inputs": [{ "step": "install" }],
+            "inputs": ["install"],
             "commands": [
                 "pnpm nx build newsletters --configuration=production"
             ]
