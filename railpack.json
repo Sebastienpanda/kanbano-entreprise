@@ -4,13 +4,13 @@
     "copy": [
         {
             "source": ".",
-            "destination": "/app"
+            "destination": "."
         }
     ],
 
     "caches": {
         "pnpm-store": {
-            "directory": "/pnpm/store",
+            "directory": "/root/.local/share/pnpm/store",
             "type": "shared"
         }
     },
@@ -25,12 +25,13 @@
         "build": {
             "inputs": ["install"],
             "commands": [
-                "pnpm nx build newsletters --configuration=production"
-            ]
+                "pnpm nx build newsletters --prod --skip-nx-cache"
+            ],
+            "outputs": ["dist/apps/newsletters"]
         }
     },
 
     "deploy": {
-        "startCommand": "node dist/apps/newsletters/main.js"
+        "startCommand": "node dist/apps/newsletters/main.js",
     }
 }
