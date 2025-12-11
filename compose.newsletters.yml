@@ -6,7 +6,7 @@ services:
         container_name: newsletters
 
         environment:
-            PORT: $${{project.PORT}}
+            PORT: "3000"
             NODE_ENV: $${{project.NODE_ENV}}
             SMTP_HOST: $${{project.SMTP_HOST}}
             SMTP_PORT: $${{project.SMTP_PORT}}

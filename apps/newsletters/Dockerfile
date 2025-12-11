@@ -9,11 +9,11 @@ COPY nx.json tsconfig.base.json ./
 
 RUN pnpm install --frozen-lockfile
 
-# Copie TOUT le monorepo, comme pour Angular
+# Copie tout le monorepo
 COPY . .
 
 # Build NestJS
-RUN pnpm exec nx build newsletters
+RUN pnpm exec nx build newsletters --production
 
 # =============================
 # Production image
@@ -23,13 +23,22 @@ FROM node:20-alpine
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV PORT=3000
 
-# Copies uniquement le build final
-COPY --from=builder /app/dist/apps/newsletters ./dist
+# Installer seulement les dépendances de production
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copies node_modules du builder (optimisé)
-COPY --from=builder /app/node_modules ./node_modules
+# Copier les fichiers nécessaires
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+
+# Installer uniquement les dépendances de production
+RUN pnpm install --prod --frozen-lockfile
+
+# Copier le build
+COPY --from=builder /app/dist/apps/newsletters ./
 
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+# Démarrer l'application
+CMD ["node", "main.js"]
