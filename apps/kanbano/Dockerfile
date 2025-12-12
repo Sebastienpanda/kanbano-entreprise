@@ -4,8 +4,8 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY nx.json tsconfig.base.json ./
+COPY ../../package.json ../../pnpm-lock.yaml ../../pnpm-workspace.yaml ./
+COPY ../../nx.json ../../tsconfig.base.json ./
 
 RUN pnpm install --frozen-lockfile
 
