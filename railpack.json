@@ -32,6 +32,6 @@
     },
 
     "deploy": {
-        "startCommand": "cd /app && node dist/apps/newsletters/main.js"
+        "startCommand": "node dist/apps/newsletters/main.js"
     }
 }
