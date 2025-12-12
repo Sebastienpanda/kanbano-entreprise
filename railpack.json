@@ -1,10 +1,10 @@
 {
     "$schema": "https://schema.railpack.com",
 
-    "assets": [
+    "copy": [
         {
-            "source": ".",
-            "destination": "."
+            "src": ".",
+            "dest": "."
         }
     ],
 
