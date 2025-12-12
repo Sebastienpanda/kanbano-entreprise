@@ -3,9 +3,6 @@ services:
         build:
             context: .
             dockerfile: ./apps/newsletters/Dockerfile
-        container_name: newsletters
-
-        env_file: [ ]
 
         environment:
             NODE_ENV: ${NODE_ENV}
@@ -22,13 +19,12 @@ services:
 
         labels:
             - "traefik.enable=true"
-
-            # Router HTTPS
             - "traefik.http.routers.newsletters.rule=Host(`api.kanbano.fr`)"
+            - "traefik.http.routers.newsletters-http.entrypoints=web"
+            - "traefik.http.routers.newsletters-http.middlewares=newsletters-https-redirect"
+            - "traefik.http.middlewares.newsletters-https-redirect.redirectscheme.scheme=https"
             - "traefik.http.routers.newsletters.entrypoints=websecure"
             - "traefik.http.routers.newsletters.tls.certresolver=letsencrypt"
-
-            # Service interne (port du container)
             - "traefik.http.services.newsletters.loadbalancer.server.port=3000"
 
         networks:

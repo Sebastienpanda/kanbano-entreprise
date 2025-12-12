@@ -1,5 +1,9 @@
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS base
 
+# =============================
+# Deps (dev + prod)
+# =============================
+FROM base AS deps
 WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -9,27 +13,46 @@ COPY nx.json tsconfig.base.json ./
 
 RUN pnpm install --frozen-lockfile
 
-# Copie TOUT le monorepo, comme pour Angular
-COPY . .
-
-# Build NestJS
-RUN pnpm exec nx build newsletters
 
 # =============================
-# Production image
+# Production deps only
 # =============================
-FROM node:20-alpine
-
+FROM base AS production-deps
 WORKDIR /app
 
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+RUN pnpm install --prod --frozen-lockfile
+
+
+# =============================
+# Build
+# =============================
+FROM base AS build
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+RUN pnpm exec nx build newsletters --configuration=production
+
+
+# =============================
+# Runtime
+# =============================
+FROM node:24-alpine
+
+WORKDIR /app
 ENV NODE_ENV=production
 
-# Copies uniquement le build final
-COPY --from=builder /app/dist/apps/newsletters ./dist
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copies node_modules du builder (optimisé)
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=production-deps /app/node_modules ./node_modules
+COPY --from=build /app/dist/apps/newsletters ./dist
 
 EXPOSE 3000
-
 CMD ["node", "dist/main.js"]
