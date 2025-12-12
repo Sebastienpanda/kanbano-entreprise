@@ -25,7 +25,6 @@
         "build": {
             "inputs": [{ "step": "install" }],
             "commands": [
-                "cd /app",
                 "pnpm nx build newsletters --configuration=production",
                 "pnpm prune --prod"
             ]
