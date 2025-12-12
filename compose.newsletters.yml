@@ -24,7 +24,7 @@ services:
             - "traefik.enable=true"
 
             # Router HTTPS
-            - "traefik.http.routers.newsletters.rule=Host(`api.kanbano.fr`) && PathPrefix(`/newsletters`)"
+            - "traefik.http.routers.newsletters.rule=Host(`api.kanbano.fr`)"
             - "traefik.http.routers.newsletters.entrypoints=websecure"
             - "traefik.http.routers.newsletters.tls.certresolver=letsencrypt"
 
