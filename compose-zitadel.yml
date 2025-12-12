@@ -9,7 +9,7 @@ services:
 
         environment:
             # =========================
-            # External URL (Traefik)
+            # External URL (Traefik HTTPS)
             # =========================
             ZITADEL_EXTERNALDOMAIN: zitadel.kanbano.fr
             ZITADEL_EXTERNALSECURE: true
@@ -47,6 +47,16 @@ services:
         volumes:
             - zitadel_data:/current-dir
 
+        healthcheck:
+            test:
+                - CMD
+                - /app/zitadel
+                - ready
+            interval: 10s
+            timeout: 60s
+            retries: 5
+            start_period: 20s
+
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.zitadel.rule=Host(`zitadel.kanbano.fr`)"
@@ -73,7 +83,8 @@ services:
         volumes:
             - zitadel_data:/current-dir:ro
 
-        network_mode: service:zitadel
+        networks:
+            - dokploy-network
 
         depends_on:
             zitadel:
@@ -82,6 +93,7 @@ services:
     db:
         image: postgres:17-alpine
         restart: unless-stopped
+
         environment:
             POSTGRES_DB: zitadel
             POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
