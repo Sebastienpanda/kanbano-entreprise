@@ -1,8 +1,8 @@
 services:
     kanbano:
         build:
-            context: .
-            dockerfile: Dockerfile
+            context: ../..
+            dockerfile: apps/kanbano/Dockerfile
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.kanbano.rule=Host(`kanbano.fr`)"
