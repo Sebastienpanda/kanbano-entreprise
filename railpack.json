@@ -10,7 +10,8 @@
 
     "steps": {
         "copy": {
-            "commands": ["rm -rf /app/*", "cp -R /code/. /app"]
+            "src": ".",
+            "dest": "/app"
         },
 
         "install": {
