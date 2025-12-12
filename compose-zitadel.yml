@@ -47,15 +47,6 @@ services:
         volumes:
             - zitadel_data:/current-dir
 
-        healthcheck:
-            test:
-                - CMD
-                - /app/zitadel
-                - ready
-            interval: 10s
-            timeout: 60s
-            retries: 5
-            start_period: 20s
 
         labels:
             - "traefik.enable=true"
@@ -100,12 +91,6 @@ services:
 
         volumes:
             - postgres_data:/var/lib/postgresql/data
-
-        healthcheck:
-            test: [ "CMD-SHELL", "pg_isready -U postgres -d zitadel" ]
-            interval: 10s
-            timeout: 30s
-            retries: 5
 
         networks:
             - dokploy-network
