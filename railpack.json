@@ -7,13 +7,12 @@
             "type": "shared"
         }
     },
+    "copy": {
+        "src": ".",
+        "dest": "/app"
+    },
 
     "steps": {
-        "copy": {
-            "src": ".",
-            "dest": "/app"
-        },
-
         "install": {
             "inputs": [{ "step": "copy" }],
             "commands": ["cd /app", "pnpm install --frozen-lockfile"],
