@@ -1,15 +1,18 @@
 {
     "$schema": "https://schema.railpack.com",
 
+    "copy": [
+        {
+            "source": ".",
+            "destination": "/app"
+        }
+    ],
+
     "caches": {
         "pnpm-store": {
             "directory": "/root/.local/share/pnpm",
             "type": "shared"
         }
-    },
-    "copy": {
-        "src": ".",
-        "dest": "/app"
     },
 
     "steps": {
