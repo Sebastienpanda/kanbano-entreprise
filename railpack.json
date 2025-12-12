@@ -10,29 +10,27 @@
 
     "caches": {
         "pnpm-store": {
-            "directory": "/root/.local/share/pnpm",
+            "directory": "/root/.local/share/pnpm/store",
             "type": "shared"
         }
     },
 
     "steps": {
         "install": {
-            "inputs": [{ "step": "copy" }],
-            "commands": ["cd /app", "pnpm install --frozen-lockfile"],
+            "commands": ["pnpm install --frozen-lockfile --prefer-offline"],
             "caches": ["pnpm-store"]
         },
 
         "build": {
-            "inputs": [{ "step": "install" }],
+            "inputs": ["install"],
             "commands": [
-                "cd /app",
-                "pnpm nx build newsletters --configuration=production",
-                "pnpm prune --prod"
-            ]
+                "pnpm nx build newsletters --configuration=production"
+            ],
+            "outputs": ["dist/apps/newsletters"]
         }
     },
 
     "deploy": {
-        "startCommand": "cd /app && node dist/apps/newsletters/main.js"
+        "startCommand": "node dist/apps/newsletters/main.js"
     }
 }
