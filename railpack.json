@@ -1,29 +1,34 @@
 {
     "$schema": "https://schema.railpack.com",
-    "copy": [
-        {
-            "source": ".",
-            "destination": "."
-        }
-    ],
-    "caches": {
-        "pnpm-store": {
-            "directory": "/root/.local/share/pnpm/store",
-            "type": "shared"
-        }
-    },
+
     "steps": {
         "install": {
+            "copy": [
+                { "src": ".", "dest": "/app" }
+            ],
+            "caches": {
+                "pnpm-store": {
+                    "directory": "/root/.pnpm-store",
+                    "type": "shared"
+                }
+            },
             "commands": [
-                "pnpm install --frozen-lockfile --prefer-offline"
+                "cd /app",
+                "pnpm install --frozen-lockfile"
             ]
         },
+
         "build": {
-            "inputs": ["install"],
+            "inputs": [{ "step": "install" }],
             "commands": [
-                "pnpm nx build newsletters --configuration=production"
-            ],
-            "outputs": ["dist/apps/newsletters"]
+                "cd /app",
+                "pnpm nx build newsletters --configuration=production",
+                "pnpm prune --prod"
+            ]
         }
+    },
+
+    "deploy": {
+        "startCommand": "node dist/apps/newsletters/main.js"
     }
 }
